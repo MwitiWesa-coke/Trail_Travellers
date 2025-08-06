@@ -3,8 +3,8 @@ from .models import Vehicle, Journey, Booking
 
 #Vehicle admin
 @admin.register(Vehicle)
-class VehicleAdmin(admin,ModelAdmin):
-    list_display = ('vehicle_type', 'registration_numbrt', 'owner')
+class VehicleAdmin(admin.ModelAdmin):
+    list_display = ('vehicle_type', 'registration_number', 'owner')
     search_fields = ('registration_number', 'owner__full_name')
 
 #Journey admin

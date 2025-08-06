@@ -28,18 +28,18 @@ class Journey(models.Model):
     #driver being assigned to the journey
     driver = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='journeys')
     vehicle = models.ForeignKey(Vehicle, on_delete=models.SET_NULL, null=True, blank=True, related_name='journey')
-
-    #start and end location of the Journey
-
+    #start and end of journey
     origin = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
-    #time
+    #when journey is supposed to start
     depature_time = models.DateTimeField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
-    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.origin} to {self.destination} by {self.driver.full_name}"
+        driver_name = self.driver.full_name if self.driver else "No driver"
+        vehicle_info = self.vehicle.registration_number if self.vehicle else "no vehicle"
+        return f"{self.origin} to {self.destination} by {driver_name} ({vehicle_info})"
 
 
 #Booking Model
