@@ -1,9 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import CustomUser, Driver, Admin
+from rides.models import Journey
 
-# Custom admin class to control how CustomUser is displayed
-class CustomUserAdmin(BaseUserAdmin):
+
+#Inline display of journeys of each driver 
+class JourneyInLine(admin.TabularInline):
+    model = Journey
+    extra = 0
+    fields = ('origin', 'destination', 'vehicle', 'depature_time', 'price')
+    readonly_fields = ('origin', 'destination', 'vehicle', 'depature_time', 'price')
+
+# Custom admin class for CustomUser
+class CustomUserAdmin(BaseUserAdmin): 
     model = CustomUser
     list_display = ('email', 'full_name', 'role', 'is_staff', 'is_superuser')
     list_filter = ('role', 'is_staff', 'is_superuser')
@@ -27,9 +36,15 @@ class CustomUserAdmin(BaseUserAdmin):
 
 #fields that can be searched in the admin interface
     search_fields  = ('email', 'full_name')
-
     ordering = ('email',)
 
+class DriverAdmin(admin.ModelAdmin):
+    """ Admin panel customization for Driver model.
+    Displays journeys inside the driver profile.
+    """
+    list_display = ('user', 'license_number', 'nationa_id')
+    inlines = [JourneyInLine]
+
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Driver)
+admin.site.register(Driver, DriverAdmin)
 admin.site.register(Admin)
