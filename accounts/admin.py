@@ -5,11 +5,19 @@ from rides.models import Journey
 
 
 #Inline display of journeys of each driver 
-class JourneyInLine(admin.TabularInline):
+class JourneyInline(admin.TabularInline):
     model = Journey
     extra = 0
     fields = ('origin', 'destination', 'vehicle', 'depature_time', 'price')
     readonly_fields = ('origin', 'destination', 'vehicle', 'depature_time', 'price')
+
+class DriverAdmin(BaseUserAdmin):
+    """ Custom admin view for the driver model.
+    shows driver details and their assigned journeys.
+    """
+    list_display = ('user', 'license_number', 'national_id')
+    search_fields = ('user__full_name', 'license_number', 'national_id')
+    inlines = [JourneyInline] #attach the journey list inside the driver detail page
 
 # Custom admin class for CustomUser
 class CustomUserAdmin(BaseUserAdmin): 
@@ -18,7 +26,7 @@ class CustomUserAdmin(BaseUserAdmin):
     list_filter = ('role', 'is_staff', 'is_superuser')
 
     fieldsets = (
-        #basic login info
+        #basic login info, personal details, permissions & groups and dates
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('full_name', 'phone', 'role')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'is_active', 'groups', 'user_permissions')}),
@@ -38,12 +46,6 @@ class CustomUserAdmin(BaseUserAdmin):
     search_fields  = ('email', 'full_name')
     ordering = ('email',)
 
-class DriverAdmin(admin.ModelAdmin):
-    """ Admin panel customization for Driver model.
-    Displays journeys inside the driver profile.
-    """
-    list_display = ('user', 'license_number', 'nationa_id')
-    inlines = [JourneyInLine]
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Driver, DriverAdmin)
