@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 # User Roles
 USER_ROLES = (
@@ -75,3 +78,11 @@ class Admin(models.Model):
 
     def __str__(sefl):
         return f"Admin: {self.user.full_name}"
+
+@receiver(post_save, sender=CustomUser)
+def create_driver_profile(sender, instance, created, **kwargs):
+    """
+    Automatically create a Driver profile when a new CustomUser is created with a role='driver'.
+    """
+    if created and instance.role == 'driver':
+        Driver.objects.create(user=instance)
