@@ -8,10 +8,10 @@ from rides.models import Journey
 class JourneyInline(admin.TabularInline):
     model = Journey
     extra = 0
-    fields = ('origin', 'destination', 'vehicle', 'depature_time', 'price')
-    readonly_fields = ('origin', 'destination', 'vehicle', 'depature_time', 'price')
+    fields = ('origin', 'destination', 'vehicle', 'departure_time', 'price')
+    readonly_fields = ('origin', 'destination', 'vehicle', 'departure_time', 'price')
 
-class DriverAdmin(BaseUserAdmin):
+class DriverAdmin(admin.ModelAdmin):
     """ Custom admin view for the driver model.
     shows driver details and their assigned journeys.
     """
