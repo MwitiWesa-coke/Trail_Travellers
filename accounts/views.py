@@ -14,11 +14,22 @@ def login_page(request):
 def register_page(request):
     return render(request, "accounts/register.html")
 
+#user registration api 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_view(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
 # --- User Auth ---
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def login_view(requset):
+def login_view(request):
     email = request.data.get('email')
     password = request.data.get('password')
 
