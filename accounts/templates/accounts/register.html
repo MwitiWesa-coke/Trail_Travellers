@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
+    <form id="registerForm" class="space-y-4">
+      <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-xl" required>
+      <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded-xl" required>
+      <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-xl" required>
+      <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700">
+        Register
+      </button>
+    </form>
+    <p class="mt-4 text-center text-sm">
+      Already have an account? 
+      <a href="/api/accounts/login-page/" class="text-blue-600">Login</a>
+    </p>
+    <div id="message" class="mt-4 text-center text-sm"></div>
+  </div>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const response = await fetch("/api/accounts/register/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await response.json();
+      const msg = document.getElementById("message");
+      if (response.ok) {
+        msg.innerHTML = "<span class='text-green-600'>Registration successful! You can login now.</span>";
+      } else {
+        msg.innerHTML = "<span class='text-red-600'>Error: " + (data.detail || JSON.stringify(data)) + "</span>";
+      }
+    });
+  </script>
+</body>
+</html>
