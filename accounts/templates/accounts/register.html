@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,29 +6,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - Trail Travellers</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: url("{% static 'images/background.jpg' %}") no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4); /* dark overlay */
+      z-index: 0;
+    }
+
+    .form-container {
+      z-index: 10; /* float above background */
+    }
+  </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-  <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+<body class="relative flex items-center justify-center h-screen">
+
+  <div class="overlay"></div>
+
+  <div class="form-container w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl relative">
     <h1 class="text-3xl font-extrabold mb-2 text-center text-green-700">Trail Travellers</h1>
     <h2 class="text-xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
-    
+
     <form id="registerForm" class="space-y-4">
       <input type="text" id="full_name" placeholder="Full Name" class="w-full p-3 border rounded-xl" required>
       <input type="text" id="phone" placeholder="Phone Number" class="w-full p-3 border rounded-xl" required>
       <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-xl" required>
       <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded-xl" required>
       <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-xl" required>
-      
+
       <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700">
         Register
       </button>
     </form>
-    
-    <p class="mt-4 text-center text-sm">
+
+    <p class="mt-4 text-center text-sm text-white/90">
       Already have an account? 
-      <a href="/api/accounts/login-page/" class="text-blue-600">Login</a>
+      <a href="/api/accounts/login-page/" class="text-green-300 hover:text-green-100">Login</a>
     </p>
-    <div id="message" class="mt-4 text-center text-sm"></div>
+    <div id="message" class="mt-4 text-center text-sm text-white/90"></div>
   </div>
 
   <script>

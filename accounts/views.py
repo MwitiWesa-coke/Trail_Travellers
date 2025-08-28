@@ -6,6 +6,7 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from .models import CustomUser, Driver
 from .serializers import UserSerializer, DriverSerializer
+from rest_framework.authtoken.models import Token
 
 
 def login_page(request):
@@ -20,10 +21,14 @@ def register_page(request):
 def register_view(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        user = serializer.save()
+
+        token, created = Token.objects.get_or_create(user=user)
+        data = serializer.data
+        data["token"] = token.key
+        return Response(data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 # --- User Auth ---
 
@@ -36,6 +41,10 @@ def login_view(request):
     user = authenticate(request, email=email, password=password)
     if user is not None:
         serializer = UserSerializer(user)
+
+        token, created = Token.objects.get_or_create(user=user)
+        data = serializer.data
+        data["token"] = token.key
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
