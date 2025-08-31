@@ -5,7 +5,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from accounts.models import Driver
 from .models import Vehicle, Journey, Booking
-from .serializers import VehicleSerializer, JourneySerializer, BookingSerializer
+from .serializers import VehicleSerializer, JourneySerializer, BookingSerializer, DriverSerializer
+from rest_framework import generics
+
+
+#login 
+def dashboard_view(request):
+    vehicles = Vehicle.objects.all()
+    return render(request, "rides/dashboard.html", {"vehicles": vehicles})
+
+class DriverListCreateView(generics.ListCreateAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverSerializer
 
 # -- Vehicles - Only driver and Admin can add
 @api_view(['POST'])
@@ -23,7 +34,7 @@ def add_vehicle(request):
         else:
             driver_id = request.data.get("driver_id")
             try:
-                driver = Driver.objects,get(id=driver_id)
+                driver = Driver.objects.get(id=driver_id)
             except Driver.DoesNotExist:
                 return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
                 
@@ -34,12 +45,11 @@ def add_vehicle(request):
 
 
 # --- Journey list 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def list_journeys(request):
-    journeys = Journey.objects.all()
-    serializer = JourneySerializer(journeys, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+class JourneyListCreateView(generics.ListCreateAPIView):
+    queryset = Journey.objects.all()
+    serializer_class = JourneySerializer
+    permission_classes = [IsAuthenticated]
+
 
 # -- Bookings - only clients and admins can creata
 
@@ -64,4 +74,3 @@ def my_bookings(request):
     bookings = Booking.objects.filter(client=request.user)
     serializer = BookingSerializer(bookings, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
-

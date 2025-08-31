@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from .models import Vehicle, Journey, Booking
 from accounts.serializers import UserSerializer, DriverSerializer
+from accounts.models import Driver
+
+class DriverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = "__all__"
 
 class VehicleSerializer(serializers.ModelSerializer):
     owner = DriverSerializer(read_only=True)
@@ -17,7 +23,7 @@ class JourneySerializer(serializers.ModelSerializer):
     class Meta:
         model = Journey
         fields = [
-            "id", "client", "driver", "vehicle", "origin", "destination", "depature_time", "price"
+            "id", "client", "driver", "vehicle", "origin", "destination", "departure_time", "price"
         ]
 
 class BookingSerializer(serializers.ModelSerializer):

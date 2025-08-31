@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate
 from .models import CustomUser, Driver
 from .serializers import UserSerializer, DriverSerializer
 from rest_framework.authtoken.models import Token
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+
 
 
 def login_page(request):
@@ -16,18 +18,24 @@ def register_page(request):
     return render(request, "accounts/register.html")
 
 #user registration api 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 @permission_classes([AllowAny])
 def register_view(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
+    if request.method == 'GET':
+        # Return an empty serializer for the browsable API form
+        serializer = UserSerializer()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        token, created = Token.objects.get_or_create(user=user)
-        data = serializer.data
-        data["token"] = token.key
-        return Response(data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
+            data = serializer.data
+            data["token"] = token.key
+            return Response(data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # --- User Auth ---
@@ -45,7 +53,7 @@ def login_view(request):
         token, created = Token.objects.get_or_create(user=user)
         data = serializer.data
         data["token"] = token.key
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
     return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
